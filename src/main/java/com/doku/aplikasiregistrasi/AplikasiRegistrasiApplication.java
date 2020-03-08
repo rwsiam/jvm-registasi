@@ -52,7 +52,7 @@ public class AplikasiRegistrasiApplication {
         return new SpringDataDialect();
     }
 
-    @Bean @Profile("local")
+    @Bean @Profile("default")
     public GoogleClientSecrets localFileClientSecrets() throws Exception {
         return loadGoogleClientSecrets();
     }
