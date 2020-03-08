@@ -1,24 +1,40 @@
 package com.doku.aplikasiregistrasi.controller;
 
 import com.doku.aplikasiregistrasi.dao.MateriDao;
+import com.doku.aplikasiregistrasi.dao.PesertaDao;
 import com.doku.aplikasiregistrasi.entity.Materi;
+import com.doku.aplikasiregistrasi.entity.Peserta;
+import com.doku.aplikasiregistrasi.service.DokuService;
+import com.doku.aplikasiregistrasi.service.RegistrationService;
+
+
+import com.doku.aplikasiregistrasi.service.dto.request.DokuHostedRequestDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Slf4j
 @Controller
 @RequestMapping("/course")
 public class CourseController {
 
+
     @Autowired private MateriDao materiDao;
+    @Autowired private PesertaDao pesertaDao;
+
+    @Autowired private RegistrationService registrationService;
+    @Autowired private DokuService dokuService;
+
 
     @GetMapping("/list")
     public ModelMap list(Pageable pageable) {
@@ -31,13 +47,21 @@ public class CourseController {
     }
 
     @GetMapping("/enroll")
-    public ModelMap displayEnrollment(@RequestParam Materi materi) {
-        return new ModelMap().addAttribute("materi", materi);
+    public ModelMap displayEnrollment(@RequestParam Materi materi, Authentication auth) {
+        log.info(auth.toString());
+        User u = (User) auth.getPrincipal();
+        Peserta p = pesertaDao.findByEmail(u.getUsername());
+        return new ModelMap()
+                .addAttribute("peserta", p)
+                .addAttribute("materi", materi);
     }
 
     @PostMapping("/enroll")
-    public String processEnrollment() {
-        return "redirect:enrollment_confirmation";
+    public String processEnrollment(@RequestParam Peserta peserta, @RequestParam Materi materi, RedirectAttributes redir) {
+        DokuHostedRequestDTO dokuRequest = registrationService.daftarWorkshop(peserta, materi);
+        redir.addFlashAttribute("dokuUrl", dokuService.getDokuUrl()+"Receive");
+        redir.addFlashAttribute("redirect", dokuRequest);
+        return "redirect:/doku/continue";
     }
 
     @GetMapping("/enrollment_confirmation")

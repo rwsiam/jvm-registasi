@@ -1,4 +1,4 @@
-package com.muhardin.endy.aplikasiregistrasi.config;
+package com.doku.aplikasiregistrasi.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -58,7 +58,7 @@ public class KonfigurasiSecurity extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
-                .antMatchers("/registration/**")
+                .antMatchers("/registrasi/**")
                 .antMatchers("/js/*")
                 .antMatchers("/img/*")
                 .antMatchers("/css/*")
