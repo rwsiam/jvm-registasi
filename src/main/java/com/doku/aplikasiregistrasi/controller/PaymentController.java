@@ -19,4 +19,3 @@ public class PaymentController {
         return new ModelMap();
     }
 }
-

@@ -1,5 +1,4 @@
 package com.doku.aplikasiregistrasi.entity;
-
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
